@@ -28,10 +28,11 @@ Chronovault:IntervalMinutes=60
 ## Build & Package
 
 ```bash
-# Build and create Windows service package
-./build.sh                              # defaults to version 0.0.1
-./build.sh 0.1.0                        # specify version
-./build.sh 0.1.0 /mnt/c/builds/chronovault/                       # copy zip to Windows folder
+# Build and create Windows service package, command variations
+
+./build.sh                                                               # defaults to version 0.0.1
+./build.sh 0.1.0                                                         # specify version
+./build.sh 0.1.0 /mnt/c/builds/chronovault/                              # copy zip to Windows folder
 ./build.sh 0.1.0 /mnt/c/builds/chronovault/Chronovault.zip               # copy with custom filename
 ./build.sh 0.1.0 /mnt/c/builds/chronovault/{{dt_utc}}_Chronovault.zip    # → 20260101T120000Z_Chronovault.zip
 ./build.sh 0.1.0 /mnt/c/builds/chronovault/{{date_utc}}_Chronovault.zip  # → 20260101_Chronovault.zip
