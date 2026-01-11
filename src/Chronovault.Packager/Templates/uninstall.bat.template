@@ -1,0 +1,11 @@
+@echo off
+echo Uninstalling {{ service_display_name }} Windows Service...
+"%~dp0{{ service_name }}.exe" stop
+"%~dp0{{ service_name }}.exe" uninstall
+if %ERRORLEVEL% EQU 0 (
+    echo [SUCCESS] Service uninstalled successfully!
+) else (
+    echo [ERROR] Service uninstall failed!
+)
+pause
+

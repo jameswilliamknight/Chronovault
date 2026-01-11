@@ -1,0 +1,11 @@
+@echo off
+echo Starting {{ service_display_name }} Windows Service...
+"%~dp0{{ service_name }}.exe" start
+if %ERRORLEVEL% EQU 0 (
+    echo [SUCCESS] Service started successfully!
+) else (
+    echo [ERROR] Service start failed!
+    echo Make sure the service is installed first by running {{ service_name }}.install.bat
+)
+pause
+

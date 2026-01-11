@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- WinSW Configuration for Chronovault Service
+     Documentation: https://github.com/winsw/winsw/blob/master/docs/xml-config-file.md -->
+<service>
+
+  <!-- ID of the service. It should be unique across the Windows system. -->
+  <id>Chronovault.{{ environment }}</id>
+
+  <!-- Path to the executable, which should be started. -->
+  <executable>%BASE%\Chronovault.Service.exe</executable>
+
+  <!-- Display name of the service. -->
+  <name>{{ service_display_name }}</name>
+
+  <!-- Service description. -->
+  <description>Chronovault Backup Service - Automatically backs up your source folder to encrypted archives.</description>
+
+  <!-- Working directory -->
+  <workingdirectory>%BASE%</workingdirectory>
+
+  <!-- Process priority -->
+  <priority>Normal</priority>
+
+  <!-- Time to wait for graceful shutdown -->
+  <stoptimeout>30 sec</stoptimeout>
+
+  <!-- Start mode of the service -->
+  <startmode>Automatic</startmode>
+  <delayedAutoStart>true</delayedAutoStart>
+
+  <!-- Logging configuration -->
+  <logpath>%BASE%\logs</logpath>
+  <log mode="roll">
+    <sizeThreshold>10MB</sizeThreshold>
+    <keepFiles>8</keepFiles>
+  </log>
+  
+  <!-- Enable detailed logging for troubleshooting -->
+  <logLevel>Info</logLevel>
+  
+  <!-- Failure actions -->
+  <onfailure action="restart" delay="10 sec"/>
+  <onfailure action="restart" delay="20 sec"/>
+  <onfailure action="none" />
+  
+  <!-- Reset failure count after 1 hour -->
+  <resetfailure>1 hour</resetfailure>
+
+  <!-- Environment variables -->
+  <env name="DOTNET_ENVIRONMENT" value="{{ environment }}" />
+  <env name="APPLICATION_VERSION" value="{{ version }}" />
+
+</service>
+

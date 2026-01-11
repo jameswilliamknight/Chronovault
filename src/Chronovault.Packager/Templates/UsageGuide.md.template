@@ -1,0 +1,102 @@
+# Chronovault Backup Service
+
+**Version:** {{ version }}
+
+A Windows service that automatically backs up your source folder to encrypted ZIP archives.
+
+## Quick Start
+
+1. **Configure** - Create `.env.chronovault` in your user profile:
+
+   ```
+   C:\Users\<username>\.env.chronovault
+   ```
+
+   With contents:
+
+   ```ini
+   Chronovault:Vault:Path=C:\Users\<username>\Documents\MyFolder
+   Chronovault:Output:Path=C:\Backups\Chronovault
+   Chronovault:Archive:Password=YourSecretPassword
+   Chronovault:IntervalMinutes=60
+   ```
+
+2. **Install** - Run as Administrator:
+
+   ```
+   {{ service_name }}.install.bat
+   ```
+
+3. **Start** - Run:
+
+   ```
+   {{ service_name }}.start.bat
+   ```
+
+## Configuration Options
+
+| Key | Description | Default |
+|-----|-------------|---------|
+| `Chronovault:Vault:Path` | Path to your source folder | (required) |
+| `Chronovault:Output:Path` | Where to save backup archives | (required) |
+| `Chronovault:Archive:Password` | Encryption password for archives | (required) |
+| `Chronovault:IntervalMinutes` | Backup interval in minutes | 60 |
+
+## Config File Discovery
+
+The service automatically finds your `.env.chronovault` file:
+
+- **Debug mode**: Uses current user's profile (`%USERPROFILE%\.env.chronovault`)
+- **Service mode**: Searches `C:\Users\*\.env.chronovault` and uses the first one found
+
+If multiple config files exist, the service will fail with an error listing them.
+
+## Data Storage
+
+| Data | Debug Mode | Service Mode |
+|------|------------|--------------|
+| SQLite database | `%LOCALAPPDATA%\Chronovault\` | `C:\ProgramData\Chronovault\` |
+| Log files | `%LOCALAPPDATA%\Chronovault\logs\` | `C:\ProgramData\Chronovault\logs\` |
+
+Log files rotate daily with 14-day retention.
+
+## Service Management
+
+| Action | Command |
+|--------|---------|
+| Install | `{{ service_name }}.install.bat` (as Admin) |
+| Start | `{{ service_name }}.start.bat` |
+| Stop | `{{ service_name }}.stop.bat` |
+| Uninstall | `{{ service_name }}.uninstall.bat` (as Admin) |
+| Redeploy | `{{ service_name }}.redeploy.bat` (as Admin) |
+
+## How It Works
+
+1. Calculates SHA256 hash of all vault files
+2. Checks hash against SQLite database of previous backups
+3. If unchanged, skips backup (no duplicate archives)
+4. If changed, creates encrypted ZIP archive with timestamp
+5. Records hash in database for future comparison
+
+## Troubleshooting
+
+**Service won't start:**
+- Check Windows Event Viewer → Application logs for errors
+- Verify `.env.chronovault` exists and has correct paths
+- Ensure vault and output paths are accessible
+
+**No backups appearing:**
+- Check logs at `C:\ProgramData\Chronovault\logs\`
+- Verify vault path exists and contains files
+- Confirm output path is writable
+
+**"Multiple config files found" error:**
+- Remove duplicate `.env.chronovault` files from other user profiles
+- Keep only one config file on the machine
+
+## Archive Format
+
+- Format: ZIP with AES-256 encryption
+- Filename: `Chronovault_YYYYMMDD_HHmmss.zip`
+- Extract with any ZIP tool that supports AES encryption (7-Zip, WinRAR, etc.)
+

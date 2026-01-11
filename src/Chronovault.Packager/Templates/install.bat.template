@@ -1,0 +1,12 @@
+@echo off
+echo Installing {{ service_display_name }} Windows Service...
+"%~dp0{{ service_name }}.exe" install
+if %ERRORLEVEL% EQU 0 (
+    echo [SUCCESS] Service installed successfully!
+    echo You can now run {{ service_name }}.start.bat to start the service.
+) else (
+    echo [ERROR] Service installation failed!
+    echo Make sure you're running as Administrator.
+)
+pause
+

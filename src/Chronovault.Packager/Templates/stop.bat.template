@@ -1,0 +1,10 @@
+@echo off
+echo Stopping {{ service_display_name }} Windows Service...
+"%~dp0{{ service_name }}.exe" stop
+if %ERRORLEVEL% EQU 0 (
+    echo [SUCCESS] Service stopped successfully!
+) else (
+    echo [ERROR] Service stop failed!
+)
+pause
+
