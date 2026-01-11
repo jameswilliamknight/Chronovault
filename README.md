@@ -1,32 +1,18 @@
 # Chronovault
 
-## Project Structure
+## How It Works
 
-```
-src/
-├── Chronovault.Core/           # Domain interfaces, models, options
-│   ├── Interfaces/                # IBackupDestination, IArchiveService, IVaultScanner
-│   ├── Models/                    # BackupRecord, VaultScanResult
-│   └── Options/                   # BackupOptions (IOptions<T> configuration)
-├── Chronovault.Infrastructure/ # External concerns
-│   ├── Destinations/              # LocalFileDestination (S3Destination future)
-│   ├── Migrations/                # FluentMigrator migrations
-│   ├── Persistence/               # SQLite repository, MigrationRunner
-│   └── Services/                  # VaultScanner, ArchiveService, BackupOrchestrator
-├── Chronovault.Service/        # Windows Service entry point
-│   ├── Program.cs                 # Host configuration, DI, Serilog
-│   └── Worker.cs                  # BackgroundService with timer
-└── Chronovault.Packager/       # Build/package console app
-    ├── Program.cs                 # Minimal orchestration
-    ├── TemplateEngine.cs          # Scriban template processing
-    ├── Helpers/                   # Static helper classes
-    │   ├── PathHelpers.cs         # Solution/project directory discovery
-    │   ├── ProcessHelpers.cs      # Command execution
-    │   ├── HttpClientFactory.cs   # Pre-configured HttpClient instances
-    │   ├── WinSwDownloader.cs     # GitHub release downloads
-    │   └── FormatHelpers.cs       # Byte formatting
-    └── Templates/                 # WinSW XML and bat file templates
-```
+Chronovault runs as a Windows service and periodically checks your source folder for changes. It calculates a SHA256 hash of all files and compares it against previous backups stored in a local SQLite database. If nothing has changed, it skips the backup entirely. When changes are detected, it creates an encrypted ZIP archive using AES-256 and saves it to your configured output location.
+
+
+## Architecture
+
+Chronovault follows clean architecture with four projects:
+
+- **Chronovault.Core** — Domain interfaces, models, and options
+- **Chronovault.Infrastructure** — SQLite persistence, file operations, backup destinations
+- **Chronovault.Service** — Windows service entry point and scheduling
+- **Chronovault.Packager** — Build tooling for creating distributable packages
 
 ## Configuration
 
@@ -67,10 +53,3 @@ Chronovault:IntervalMinutes=60
 
 - SQLite database: `%LOCALAPPDATA%/Chronovault/backup-history.db`
 - Logs: `%LOCALAPPDATA%/Chronovault/logs/`
-
-## Architecture Notes
-
-- **Clean Architecture**: Core contains only domain logic, Infrastructure handles external concerns
-- **Change Detection**: SHA256 hash of all vault files; skips backup if unchanged
-- **Archive Format**: ZIP with AES-256 encryption (DotNetZip - pure .NET, no external dependencies)
-- **Destination Abstraction**: `IBackupDestination` interface allows future S3 implementation
